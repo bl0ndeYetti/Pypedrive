@@ -17,7 +17,7 @@ def main():
     client = PipedriveV2Client(api_token=api_token, company_domain=company_domain)
     
     # Example usage (uncomment and modify as needed):
-    #deals = client.deals.get_details(123)
+    deals = client.deals.get_details(123)
     #print(deals)
 
 if __name__ == '__main__':
