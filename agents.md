@@ -1,0 +1,1 @@
+For now, your biggest focus should just be gaining an understanding of what we have so far and the goals of what we're trying to do. Ultimately, help us to find those goals and get a plan in place for getting everything built out.
