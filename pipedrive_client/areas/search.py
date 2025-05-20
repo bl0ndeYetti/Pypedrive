@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any, List, Union
 
-from ..client import BaseResource
+from ..base import BaseResource
 
 class Search(BaseResource):
     """

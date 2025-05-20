@@ -23,7 +23,11 @@ class Activities(BaseResource):
             Dictionary representing the activity details.
         """
         params = {"include_fields": include_fields}
-        return self._client._request("GET", f"/activities/{activity_id}", params=params) # Pass params directly
+        return self._client._request(
+            "GET",
+            f"/activities/{activity_id}",
+            params=self._prepare_params(params),
+        )
 
     def list_activities(
         self,
@@ -71,7 +75,7 @@ class Activities(BaseResource):
             Dictionary containing list of activities and pagination info.
         """
         params = {
-            "user_id": owner_id, # Map owner_id kwarg to user_id param
+            "user_id": owner_id,  # Map owner_id kwarg to user_id param
             "filter_id": filter_id,
             "type": type,
             "limit": limit,
@@ -88,7 +92,11 @@ class Activities(BaseResource):
             project_id: project_id,
             lead_id: lead_id,
         }
-        return self._client._request("GET", "/activities", params=params) # Pass params directly
+        return self._client._request(
+            "GET",
+            "/activities",
+            params=self._prepare_params(params),
+        )
 
     def create_activity(self, data: Union[Dict[str, Any], ActivityCreateModel]) -> Dict[str, Any]:
         """

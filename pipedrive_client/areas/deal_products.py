@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any, Union, List
 
-from ..client import BaseResource
+from ..base import BaseResource
 from ..models.deal_products import DealProductAttachModel, DealProductUpdateModel
 
 
