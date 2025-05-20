@@ -67,3 +67,8 @@ class Attendee(BaseModel):
     is_organizer: Optional[int] = None # 0 or 1, V1 format still used? Check if boolean works.
     person_id: Optional[int] = None
     user_id: Optional[int] = None
+
+class FieldOption(BaseModel):
+    """Option item used with enum or set custom fields."""
+    id: Optional[int] = Field(None, description="Existing option ID")
+    label: str = Field(..., description="Displayed option label")
