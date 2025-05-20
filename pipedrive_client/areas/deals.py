@@ -2,7 +2,12 @@ from typing import Optional, Dict, Any, Union, List
 
 from ..base import BaseResource
 # from ..exceptions import PipedriveAPIError # Removed unused import
-from ..models.deals import DealCreateModel, DealUpdateModel
+from ..models.deals import (
+    DealCreateModel,
+    DealUpdateModel,
+    DealStatusEnum,
+    SortDirectionEnum,
+)
 
 
 class Deals(BaseResource):
@@ -42,11 +47,11 @@ class Deals(BaseResource):
         filter_id: Optional[int] = None,
         stage_id: Optional[int] = None,
         pipeline_id: Optional[int] = None,
-        status: Optional[str] = None,
+        status: Optional[DealStatusEnum] = None,
         limit: Optional[int] = None,
         cursor: Optional[str] = None,
         sort_by: Optional[str] = None,
-        sort_direction: Optional[str] = None,
+        sort_direction: Optional[SortDirectionEnum] = None,
         person_id: Optional[int] = None,
         org_id: Optional[int] = None,
         include_fields: Optional[str] = None,
@@ -109,7 +114,7 @@ class Deals(BaseResource):
         exact_match: Optional[bool] = None,
         person_id: Optional[int] = None,
         organization_id: Optional[int] = None,
-        status: Optional[str] = None,
+        status: Optional[DealStatusEnum] = None,
         include_fields: Optional[str] = None,
         limit: Optional[int] = None,
         cursor: Optional[str] = None,

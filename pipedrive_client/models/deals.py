@@ -1,25 +1,92 @@
 from typing import Optional, List, Dict, Any, Union
+from enum import Enum
 from pydantic import BaseModel, Field
 from .common import MonetaryValue # Removed BaseCustomFieldsModel
 
+
+class DealStatusEnum(str, Enum):
+    """Allowed deal status values."""
+
+    open = "open"
+    won = "won"
+    lost = "lost"
+    deleted = "deleted"
+
+
+class SortDirectionEnum(str, Enum):
+    """Allowed sorting directions."""
+
+    asc = "asc"
+    desc = "desc"
+
 class DealCreateModel(BaseModel):
     title: str
-    value: Optional[Union[float, MonetaryValue, str]] = None # Can be float, structured, or string "0"
-    currency: Optional[str] = None # Required if value is float/str
-    owner_id: Optional[int] = None # Renamed from user_id
+    value: Optional[Union[float, MonetaryValue, str]] = None  # Can be float, structured, or string "0"
+    currency: Optional[str] = None  # Required if value is float/str
+    owner_id: Optional[int] = None  # Renamed from user_id
     person_id: Optional[int] = None
     org_id: Optional[int] = None
     pipeline_id: Optional[int] = None
     stage_id: Optional[int] = None
-    status: Optional[str] = None # 'open', 'won', 'lost'
+    status: Optional[DealStatusEnum] = Field(
+        None,
+        description="The status of the deal"
+    )
     probability: Optional[float] = None
     lost_reason: Optional[str] = None
-    add_time: Optional[str] = None # YYYY-MM-DD HH:MM:SS or RFC3339
-    expected_close_date: Optional[str] = None # YYYY-MM-DD
-    visible_to: Optional[int] = None # 1, 3, 5, 7
+    add_time: Optional[str] = None  # YYYY-MM-DD HH:MM:SS or RFC3339
+    update_time: Optional[str] = Field(
+        None,
+        description="The last updated date and time of the deal"
+    )
+    stage_change_time: Optional[str] = Field(
+        None,
+        description="The last updated date and time of the deal stage"
+    )
+    expected_close_date: Optional[str] = None  # YYYY-MM-DD
+    visible_to: Optional[int] = None  # 1, 3, 5, 7
+    close_time: Optional[str] = Field(
+        None,
+        description="The date and time of closing the deal. Can only be set if deal status is won or lost."
+    )
+    won_time: Optional[str] = Field(
+        None,
+        description="The date and time of changing the deal status as won. Can only be set if deal status is won."
+    )
+    lost_time: Optional[str] = Field(
+        None,
+        description="The date and time of changing the deal status as lost. Can only be set if deal status is lost."
+    )
     label_ids: Optional[List[int]] = None
-    custom_fields: Optional[Dict[str, Any]] = None # V2 structure
-    # ACV/ARR/MRR fields might be read-only or calculated
+    origin: Optional[str] = Field(
+        None,
+        description="The way this Deal was created. `origin` field is set by Pipedrive when Deal is created and cannot be changed."
+    )
+    origin_id: Optional[str] = Field(
+        None,
+        description="The optional ID to further distinguish the origin of the deal - e.g. Which API integration created this Deal."
+    )
+    channel: Optional[int] = Field(
+        None,
+        description="The ID of your Marketing channel this Deal was created from."
+    )
+    channel_id: Optional[str] = Field(
+        None,
+        description="The optional ID to further distinguish the Marketing channel."
+    )
+    arr: Optional[float] = Field(
+        None,
+        description="The Annual Recurring Revenue of the deal"
+    )
+    mrr: Optional[float] = Field(
+        None,
+        description="The Monthly Recurring Revenue of the deal"
+    )
+    acv: Optional[float] = Field(
+        None,
+        description="The Annual Contract Value of the deal"
+    )
+    custom_fields: Optional[Dict[str, Any]] = None  # V2 structure
 
     class Config:
         extra = 'allow' # Allow custom fields not explicitly defined if not using BaseCustomFieldsModel approach
@@ -33,14 +100,65 @@ class DealUpdateModel(BaseModel):
     org_id: Optional[int] = None
     pipeline_id: Optional[int] = None
     stage_id: Optional[int] = None
-    status: Optional[str] = None # 'open', 'won', 'lost'
+    status: Optional[DealStatusEnum] = Field(
+        None,
+        description="The status of the deal"
+    )
     probability: Optional[float] = None
     lost_reason: Optional[str] = None
-    expected_close_date: Optional[str] = None # YYYY-MM-DD
-    visible_to: Optional[int] = None # 1, 3, 5, 7
+    add_time: Optional[str] = None
+    update_time: Optional[str] = Field(
+        None,
+        description="The last updated date and time of the deal"
+    )
+    stage_change_time: Optional[str] = Field(
+        None,
+        description="The last updated date and time of the deal stage"
+    )
+    expected_close_date: Optional[str] = None  # YYYY-MM-DD
+    visible_to: Optional[int] = None  # 1, 3, 5, 7
+    close_time: Optional[str] = Field(
+        None,
+        description="The date and time of closing the deal. Can only be set if deal status is won or lost."
+    )
+    won_time: Optional[str] = Field(
+        None,
+        description="The date and time of changing the deal status as won. Can only be set if deal status is won."
+    )
+    lost_time: Optional[str] = Field(
+        None,
+        description="The date and time of changing the deal status as lost. Can only be set if deal status is lost."
+    )
     label_ids: Optional[List[int]] = None
-    custom_fields: Optional[Dict[str, Any]] = None # V2 structure
-    # ACV/ARR/MRR fields might be read-only or calculated
+    origin: Optional[str] = Field(
+        None,
+        description="The way this Deal was created. `origin` field is set by Pipedrive when Deal is created and cannot be changed."
+    )
+    origin_id: Optional[str] = Field(
+        None,
+        description="The optional ID to further distinguish the origin of the deal - e.g. Which API integration created this Deal."
+    )
+    channel: Optional[int] = Field(
+        None,
+        description="The ID of your Marketing channel this Deal was created from."
+    )
+    channel_id: Optional[str] = Field(
+        None,
+        description="The optional ID to further distinguish the Marketing channel."
+    )
+    arr: Optional[float] = Field(
+        None,
+        description="The Annual Recurring Revenue of the deal"
+    )
+    mrr: Optional[float] = Field(
+        None,
+        description="The Monthly Recurring Revenue of the deal"
+    )
+    acv: Optional[float] = Field(
+        None,
+        description="The Annual Contract Value of the deal"
+    )
+    custom_fields: Optional[Dict[str, Any]] = None  # V2 structure
 
     class Config:
         extra = 'allow'
@@ -71,9 +189,9 @@ class GetDealsParams(BaseModel):
     stage_id: Optional[int] = Field(
         None, description="Only deals in the given stage are returned"
     )
-    status: Optional[str] = Field(
+    status: Optional[DealStatusEnum] = Field(
         None,
-        description="Filter by deal status (open, won, lost, deleted)"
+        description="Only fetch deals with a specific status"
     )
     updated_since: Optional[str] = Field(
         None,
@@ -87,8 +205,8 @@ class GetDealsParams(BaseModel):
         None,
         description="Field to sort by, e.g. 'id', 'update_time', 'add_time'"
     )
-    sort_direction: Optional[str] = Field(
-        None, description="Sorting direction, asc or desc"
+    sort_direction: Optional[SortDirectionEnum] = Field(
+        None, description="The sorting direction"
     )
     include_fields: Optional[str] = Field(
         None,
@@ -97,9 +215,6 @@ class GetDealsParams(BaseModel):
     custom_fields: Optional[str] = Field(
         None,
         description="Custom field keys to include (comma separated)"
-    )
-    start: Optional[int] = Field(
-        None, description="Pagination start offset"
     )
     limit: Optional[int] = Field(
         None, description="Items shown per page (max 500)"
