@@ -44,3 +44,80 @@ class DealUpdateModel(BaseModel):
 
     class Config:
         extra = 'allow'
+
+
+class GetDealsParams(BaseModel):
+    """Query parameters for GET /v2/deals"""
+
+    filter_id: Optional[int] = Field(
+        None, description="Only deals matching the given filter are returned"
+    )
+    ids: Optional[str] = Field(
+        None,
+        description="Comma separated list of deal IDs to fetch"
+    )
+    owner_id: Optional[int] = Field(
+        None, description="Only deals owned by the given user are returned"
+    )
+    person_id: Optional[int] = Field(
+        None, description="Only deals linked to the given person are returned"
+    )
+    org_id: Optional[int] = Field(
+        None, description="Only deals linked to the given organization are returned"
+    )
+    pipeline_id: Optional[int] = Field(
+        None, description="Only deals in the given pipeline are returned"
+    )
+    stage_id: Optional[int] = Field(
+        None, description="Only deals in the given stage are returned"
+    )
+    status: Optional[str] = Field(
+        None,
+        description="Filter by deal status (open, won, lost, deleted)"
+    )
+    updated_since: Optional[str] = Field(
+        None,
+        description="Return deals updated after this time (RFC3339)"
+    )
+    updated_until: Optional[str] = Field(
+        None,
+        description="Return deals updated before this time (RFC3339)"
+    )
+    sort_by: Optional[str] = Field(
+        None,
+        description="Field to sort by, e.g. 'id', 'update_time', 'add_time'"
+    )
+    sort_direction: Optional[str] = Field(
+        None, description="Sorting direction, asc or desc"
+    )
+    include_fields: Optional[str] = Field(
+        None,
+        description="Additional fields to include in the results"
+    )
+    custom_fields: Optional[str] = Field(
+        None,
+        description="Custom field keys to include (comma separated)"
+    )
+    start: Optional[int] = Field(
+        None, description="Pagination start offset"
+    )
+    limit: Optional[int] = Field(
+        None, description="Items shown per page (max 500)"
+    )
+    cursor: Optional[str] = Field(
+        None, description="Pagination cursor for the next page"
+    )
+
+
+class GetDealParams(BaseModel):
+    """Query parameters for GET /v2/deals/{id}"""
+
+    include_fields: Optional[str] = Field(
+        None,
+        description="Additional fields to include in the response"
+    )
+    custom_fields: Optional[str] = Field(
+        None,
+        description="Custom field keys to include (comma separated)"
+    )
+
