@@ -18,31 +18,36 @@ if TYPE_CHECKING:
     pass
 
 
-class PipedriveV2Client:
-    """
-    A client for interacting with the Pipedrive API v2.
-    """
-    def __init__(self, api_token: str, company_domain: str):
-        """
-        Initializes the Pipedrive API v2 client.
+class PipedriveClient:
+    """Generic client for interacting with the Pipedrive API."""
+
+    def __init__(self, api_token: str, company_domain: str, *, api_version: str = "v2"):
+        """Create a client for the given API version.
 
         Args:
-            api_token: Your Pipedrive API token.
-            company_domain: Your Pipedrive company domain (e.g., 'mycompany' for 'mycompany.pipedrive.com').
+            api_token: Pipedrive API token.
+            company_domain: Your Pipedrive company domain (e.g. ``"mycompany"`` for ``"mycompany.pipedrive.com"``).
+            api_version: ``"v1"`` or ``"v2"``.
         """
         if not api_token:
             raise ValueError("API token cannot be empty.")
         if not company_domain:
             raise ValueError("Company domain cannot be empty.")
-            
-        # Remove any protocol or .pipedrive.com suffix if provided
-        company_domain = company_domain.replace('https://', '').replace('http://', '').replace('.pipedrive.com', '')
-        
+        if api_version not in {"v1", "v2"}:
+            raise ValueError("api_version must be 'v1' or 'v2'")
+
+        # Remove any protocol or ".pipedrive.com" suffix if provided
+        company_domain = (
+            company_domain.replace("https://", "").replace("http://", "").replace(".pipedrive.com", "")
+        )
+
         self.api_token = api_token
-        # Update base_url to include /api/v2
-        self.base_url = f"https://{company_domain}.pipedrive.com/api/v2"
-        # Simplify headers setup
-        self.headers = {"x-api-token": self.api_token}
+        self.api_version = api_version
+        self.base_url = f"https://{company_domain}.pipedrive.com/api/{api_version}"
+
+        # Use a single session for efficiency
+        self.session = requests.Session()
+        self.session.headers.update({"x-api-token": self.api_token})
 
         # Initialize resource handlers
         self.activities = Activities(self)
@@ -86,10 +91,9 @@ class PipedriveV2Client:
         url = f"{self.base_url}{path}"
         
         try:
-            response = requests.request(
+            response = self.session.request(
                 method,
                 url,
-                headers=self.headers,
                 params=self._prepare_params(params) if params else None,
                 json=data if data else None,
                 timeout=30
@@ -122,30 +126,33 @@ class PipedriveV2Client:
                 else:
                     raise PipedriveAPIError(response.status_code, error_message, error_data)
 
-            # Handle successful responses that might have no content
-            if response.status_code == 204:
-                return {"success": True}
-
-            # For successful responses, ensure we have content
-            if not response.content:
+            # Handle no content
+            if response.status_code == 204 or not response.content:
                 return {"success": True, "data": None}
 
-            # Try to parse JSON response
-            try:
-                return response.json()
-            except requests.exceptions.JSONDecodeError as e:
-                # Include response details in error for debugging
-                raise PipedriveParseError(
-                    response.status_code,
-                    f"Failed to decode JSON response: {e}",
-                    {
-                        "raw_response": response.text[:1000],  # Limit raw response length
-                        "content_type": response.headers.get('content-type'),
-                        "response_length": len(response.content),
-                        "url": url,
-                        "method": method
-                    }
-                )
+            content_type = response.headers.get("content-type", "")
+            if "application/json" in content_type:
+                try:
+                    return response.json()
+                except requests.exceptions.JSONDecodeError as e:
+                    raise PipedriveParseError(
+                        response.status_code,
+                        f"Failed to decode JSON response: {e}",
+                        {
+                            "raw_response": response.text[:1000],
+                            "content_type": content_type,
+                            "response_length": len(response.content),
+                            "url": url,
+                            "method": method,
+                        },
+                    )
+
+            # Non-JSON response - return raw content
+            return {
+                "success": True,
+                "content": response.content,
+                "content_type": content_type,
+            }
 
         except requests.exceptions.RequestException as e:
             # Provide more context for network errors
@@ -163,9 +170,17 @@ class PipedriveV2Client:
         for k, v in params.items():
             if v is not None:
                 if isinstance(v, bool):
-                    prepared[k] = str(v).lower() # Convert bool to 'true'/'false' strings for params
+                    prepared[k] = str(v).lower()  # Convert bool to 'true'/'false'
                 elif isinstance(v, list):
-                     prepared[k] = ','.join(map(str, v))
+                    prepared[k] = ','.join(map(str, v))
                 else:
                     prepared[k] = v
         return prepared
+
+
+class PipedriveV2Client(PipedriveClient):
+    """Backward compatible client that defaults to the v2 API."""
+
+    def __init__(self, api_token: str, company_domain: str):
+        super().__init__(api_token, company_domain, api_version="v2")
+
