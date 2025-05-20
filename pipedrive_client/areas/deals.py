@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any, Union, List
 
-from ..client import BaseResource
+from ..base import BaseResource
 # from ..exceptions import PipedriveAPIError # Removed unused import
 from ..models.deals import DealCreateModel, DealUpdateModel
 
@@ -29,7 +29,11 @@ class Deals(BaseResource):
             "include_fields": include_fields,
             "custom_fields": custom_fields,
         }
-        return self._client._request("GET", f"deals/{deal_id}", params=params)
+        return self._client._request(
+            "GET",
+            f"deals/{deal_id}",
+            params=self._prepare_params(params),
+        )
 
     def list_deals(
         self,
@@ -66,7 +70,11 @@ class Deals(BaseResource):
             "include_fields": include_fields,
             "custom_fields": custom_fields,
         }
-        return self._client._request("GET", "deals", params=params)
+        return self._client._request(
+            "GET",
+            "deals",
+            params=self._prepare_params(params),
+        )
 
     def create_deal(self, data: Union[Dict[str, Any], DealCreateModel]) -> Dict[str, Any]:
         """Creates a new deal. (POST /deals)"""
@@ -118,5 +126,9 @@ class Deals(BaseResource):
             "limit": limit,
             "cursor": cursor,
         }
-        return self._client._request("GET", "deals/search", params=params)
+        return self._client._request(
+            "GET",
+            "deals/search",
+            params=self._prepare_params(params),
+        )
     
