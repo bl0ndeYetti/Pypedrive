@@ -8,7 +8,7 @@ from .exceptions import (
 )
 from .base import BaseResource
 # Import resource classes dynamically if needed, or explicitly
-from .resources import (
+from .areas import (
     Activities, Deals, DealProducts, Organizations, Persons,
     Products, ProductVariations, Pipelines, Stages, Search
 )

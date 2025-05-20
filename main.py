@@ -7,14 +7,18 @@ def main():
     load_dotenv()
     
     # Get credentials from environment variables
-    api_token = os.getenv('PD_API_TOKEN')
-    company_domain = '' #'mycompany' from mycompany.pipedrive.com
+    api_token = os.getenv('PIPEDRIVE_API_KEY')
+    company_domain = os.getenv('PIPEDRIVE_COMPANY_DOMAIN')
+    company_subdomain = os.getenv('PIPEDRIVE_COMPANY_SUBDOMAIN')
     
-    if not api_token or not company_domain:
-        raise ValueError("Please set PD_API_TOKEN and PD_COMPANY_DOMAIN in your .env file")
+    if not api_token:
+        raise ValueError("API Key Missing")
+    
+    if not company_domain and not company_subdomain:
+        raise ValueError("Company Domain or Subdomain Missing. One is required.")
     
     # Initialize Pipedrive client
-    client = PipedriveV2Client(api_token=api_token, company_domain=company_domain)
+    client = PipedriveV2Client(api_token=api_token, company_domain=company_domain, company_subdomain=company_subdomain)
     
     # Example usage (uncomment and modify as needed):
     deals = client.deals.get_details(123)
