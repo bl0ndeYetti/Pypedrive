@@ -1,1 +1,17 @@
-For now, your biggest focus should just be gaining an understanding of what we have so far and the goals of what we're trying to do. Ultimately, help us to find those goals and get a plan in place for getting everything built out.
+- Review individual files in /resources/api-docs. These are markdown files containing information on various API areas, which break down the endpoints for that API area.
+- For each file, review the file and understand the purpose of the API calls within.
+- For all non-depreciated endpoints, make a note of the following:
+  - Endpoint name
+  - Endpoint description
+  - Endpoint parameters
+  - Endpoint request body, including required fields and expected data types
+  - Endpoint response
+  - Notes on what the endpoint is used for and how it fits into the overall architecture of the project
+- Create Pydantic models for each endpoint based on the information you've gathered. Place these in individual files, named after the area of the API they are for, which will correlate with the name of the markdown file they are in inside /resources/api-docs.
+- If it makes sense for there to be shared models, place them in a designated file for shared models.
+- Each model should have the following:
+  - Field name
+  - Field description
+  - Field data type
+  - Field required status
+  - Notes on what the field is for and how it fits into the overall architecture of the api
